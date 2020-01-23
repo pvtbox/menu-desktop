@@ -1,0 +1,8 @@
+Without KF5 compilation:
+- extra-cmake-modules
+- kio-dev
+- libdolphinvcs-dev
+
+
+cmake -D KF5_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/cmake -D CMAKE_INSTALL_PREFIX=/ ..
+

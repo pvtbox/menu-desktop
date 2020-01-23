@@ -1,0 +1,23 @@
+HKCR
+{
+	NoRemove *
+    {
+        NoRemove shellex
+        {
+            NoRemove ContextMenuHandlers
+            {
+                ForceRemove Pvtbox = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+            }
+        }
+    }
+	NoRemove AllFileSystemObjects
+    {
+        NoRemove shellex
+        {
+            NoRemove ContextMenuHandlers
+            {
+                ForceRemove Pvtbox = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "KPlugin": {
+        "Description": "Pvtbox OverlayIcon Plugin",
+        "ServiceTypes": [
+            "KOverlayIconPlugin"
+        ]
+    }
+}

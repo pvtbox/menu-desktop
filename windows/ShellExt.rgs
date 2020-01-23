@@ -1,0 +1,46 @@
+HKCR
+{
+	ShellContextMenu.ShellExt.1 = s 'ShellExt Class'
+	{
+		CLSID = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+	}
+	ShellContextMenu.ShellExt = s 'ShellExt Class'
+	{
+		CLSID = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+		CurVer = s 'ShellContextMenu.ShellExt.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {3D9AE9AC-E573-497A-970D-4F45501AC1DF} = s 'ShellExt Class'
+		{
+			ProgID = s 'ShellContextMenu.ShellExt.1'
+			VersionIndependentProgID = s 'ShellContextMenu.ShellExt'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+		}
+	}
+    NoRemove *
+    {
+        NoRemove shellex
+        {
+            NoRemove ContextMenuHandlers
+            {
+                ForceRemove Pvtbox = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+            }
+        }
+    }
+	NoRemove AllFileSystemObjects
+    {
+        NoRemove shellex
+        {
+            NoRemove ContextMenuHandlers
+            {
+                ForceRemove Pvtbox = s '{3D9AE9AC-E573-497A-970D-4F45501AC1DF}'
+            }
+        }
+    }
+}

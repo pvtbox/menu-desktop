@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Service
+Name=Pvtbox
+X-KDE-ServiceTypes=KFileItemAction/Plugin
+X-KDE-Library=pvtbox-dolphin-menu
+MimeType=application/octet-stream;inode/directory;

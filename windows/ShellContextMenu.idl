@@ -1,0 +1,30 @@
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(FB2DE7D9-91BF-4989-A68D-AD99F892FAC8),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IShellExt : IDispatch{
+};
+
+[
+	uuid(FEC6B5FE-160C-4C57-9D3A-060CC06CFBCE),
+	version(1.0),
+]
+library ShellContextMenuLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(3D9AE9AC-E573-497A-970D-4F45501AC1DF)		
+	]
+	coclass ShellExt
+	{
+		[default] interface IShellExt;
+	};
+};
+
