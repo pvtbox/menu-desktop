@@ -42,5 +42,7 @@ namespace PvtboxClientAPI {
 
     void openLink(const std::vector<std::string>& selectedFilesPaths);
 
+    void collaborationSettings(const std::vector<std::string>& selectedFilesPaths);
+
     std::string isShared(const std::vector<std::string>& selectedFilesPaths);
 }

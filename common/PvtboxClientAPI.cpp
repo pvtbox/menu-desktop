@@ -474,3 +474,10 @@ std::string PvtboxClientAPI::isShared(const std::vector<std::string>& selectedFi
                                            defaultValue);
     return isSharedValue.asString();
 }
+
+//=============================================================================
+// Open collaboration settings
+void PvtboxClientAPI::collaborationSettings(const std::vector<std::string>& selectedFilesPaths) {
+    sendJsonMessage("collaboration_settings",
+        selectedFilesPaths);
+}

@@ -335,9 +335,14 @@ void PathChecker::clear_paths_(const std::string& path) {
         }
     }
     }
-    for (auto& path : removedPaths){
-        LONG event_id = is_dir(path) ? SHCNE_UPDATEDIR : SHCNE_UPDATEITEM;
-        SHChangeNotify(event_id, SHCNF_PATH | SHCNF_FLUSHNOWAIT, path.data(), NULL);
+    for (auto& p : removedPaths){
+        int pos = p.rfind(L'\\');
+        if(pos == wstring::npos)
+            continue;
+
+        wstring path_dir = p.substr(0, pos - 1);
+        // log_f << "checker log " << "update dir" << ws2utf8(path_dir) << std::endl;
+        SHChangeNotify(SHCNE_UPDATEDIR, SHCNF_PATH | SHCNF_FLUSHNOWAIT, path_dir.data(), NULL);
     }
 }
 

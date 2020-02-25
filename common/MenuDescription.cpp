@@ -23,6 +23,13 @@
 #include <cstring>
 #include <vector>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <shlwapi.h>
+#else
+#include <sys/stat.h>
+#endif
+
 #define gettext(text) text
 
 #ifdef _WIN32
@@ -30,6 +37,32 @@
 #else
 #define SEPARATOR "/"
 #endif
+
+#ifdef _WIN32
+static std::wstring utf82ws(const std::string& str) {
+    if (str.empty())
+        return std::wstring();
+    int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
+    wchar_t* wstr = new wchar_t[size];
+    // std::valarray<char> buf(size + 1);
+    size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, wstr, size);
+    if (!size)
+        throw std::runtime_error("Failed to convert from UTF8");
+
+    return wstr;
+}
+#endif
+
+bool isRootDirectory(const std::string& pathUtf8, const std::string& syncFolderUtf8) {
+    bool isRoot = pathUtf8.find(SEPARATOR, syncFolderUtf8.size() + 1) == std::string::npos;
+#ifdef _WIN32
+    std::wstring path = utf82ws(pathUtf8);
+    return PathIsDirectory(path.data()) && isRoot;
+#else
+    struct stat buffer;
+    return (stat(pathUtf8.data(), &buffer) == 0 && (buffer.st_mode & S_IFDIR) && isRoot);
+#endif
+}
 
 const MenuItemDescription menu = { // Main menu item description
     "pvt_box", // name for GTK
@@ -63,8 +96,19 @@ const MenuItemDescription insideSubMenu[] = { // Submenu for synchronized folder
      NULL, // icon name
      PvtboxClientAPI::openLink}}; // action
 
+const MenuItemDescription insideSubMenuWithCollabs[] = { // Submenu for synchronized folder with collaborations
+    {"collaboration_settings", // name for GTK
+     gettext("Collaboration settings"), // label
+     gettext("Manage collaboration settings"), // tip
+     NULL, // icon name
+     PvtboxClientAPI::collaborationSettings}, // action
+     insideSubMenu[0],  insideSubMenu[1],  insideSubMenu[2],  insideSubMenu[3] };
+
 const MenuItemDescription insideSubMenuNotShared[] = { // Submenu for synchronized folder not shared
-    insideSubMenu[0],  insideSubMenu[2] ,  insideSubMenu[3]};
+    insideSubMenu[0],  insideSubMenu[2],  insideSubMenu[3] };
+
+const MenuItemDescription insideSubMenuNotSharedWithCollabs[] = { // Submenu for synchronized folder not shared with collaborations
+    insideSubMenuWithCollabs[0], insideSubMenuWithCollabs[1],  insideSubMenuWithCollabs[3],  insideSubMenuWithCollabs[4] };
 
 const MenuItemDescription outsideSubMenu[] = { // Submenu for all other folders
     {"copy_to_sync_folder", // name for GTK
@@ -103,12 +147,27 @@ MenuDescription getMenu(const std::vector<std::string>& selectedFilesPaths,
             result.size = sizeof(outsideSubMenu) / sizeof(outsideSubMenu[0]);
         }
     } else if (parent == &menu) {
-        result.items = insideSubMenu;
-        result.size = sizeof(insideSubMenu) / sizeof(insideSubMenu[0]);
         std::string is_shared = PvtboxClientAPI::isShared(selectedFilesPaths);
-        if (is_shared.size() == 0) {
-            result.items = insideSubMenuNotShared;
-            result.size = sizeof(insideSubMenuNotShared) / sizeof(insideSubMenuNotShared[0]);
+        bool showCollab = selectedFilesPaths.size() == 1 && isRootDirectory(selectedFilePath, syncFolderUtf8);
+        if (is_shared.size() != 0){
+            if (showCollab) {
+                result.items = insideSubMenuWithCollabs;
+                result.size = sizeof(insideSubMenuWithCollabs) / sizeof(insideSubMenuWithCollabs[0]);
+            }
+            else{
+                result.items = insideSubMenu;
+                result.size = sizeof(insideSubMenu) / sizeof(insideSubMenu[0]);
+            }
+        }
+        else{
+            if (showCollab) {
+                result.items = insideSubMenuNotSharedWithCollabs;
+                result.size = sizeof(insideSubMenuNotSharedWithCollabs) / sizeof(insideSubMenuNotSharedWithCollabs[0]);
+            }
+            else {
+                result.items = insideSubMenuNotShared;
+                result.size = sizeof(insideSubMenuNotShared) / sizeof(insideSubMenuNotShared[0]);
+            }
         }
     }
 
