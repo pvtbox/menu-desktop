@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <vector>
+#include <unordered_set>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -71,7 +72,33 @@ const MenuItemDescription menu = { // Main menu item description
     "pvtbox", // icon name
     NULL}; // action
 
+const MenuItemDescription insideMenu[] = { // Menu for synchronized folder
+    {"remove_from_offline", // name for GTK
+     gettext("Remove from offline"), // label
+     gettext("Remove file or folder from offline"), // tip
+     "pvtbox-online", // icon name
+     PvtboxClientAPI::offlineOff}, // action
+
+    {"add_to_offline", // name for GTK
+     gettext("Add to offline"), // label
+     gettext("Add file or folder to offline"), // tip
+     "pvtbox-syncing", // icon name
+     PvtboxClientAPI::offlineOn}, // action
+     
+     menu,
+    
+};
+
+const int insideMainSize = sizeof(insideMenu) / sizeof(insideMenu[0]);
+MenuItemDescription mainItems[insideMainSize];
+
 const MenuItemDescription insideSubMenu[] = { // Submenu for synchronized folder
+    {"collaboration_settings", // name for GTK
+     gettext("Collaboration settings"), // label
+     gettext("Manage collaboration settings"), // tip
+     NULL, // icon name
+     PvtboxClientAPI::collaborationSettings}, // action
+
     {"copy_link", // name for GTK
      gettext("Get link"), // label
      gettext("Get link to public resource"), // tip
@@ -94,21 +121,10 @@ const MenuItemDescription insideSubMenu[] = { // Submenu for synchronized folder
      gettext("Show on site"), // label
      gettext("View this file on site"), // tip
      NULL, // icon name
-     PvtboxClientAPI::openLink}}; // action
+     PvtboxClientAPI::openLink} }; // action
 
-const MenuItemDescription insideSubMenuWithCollabs[] = { // Submenu for synchronized folder with collaborations
-    {"collaboration_settings", // name for GTK
-     gettext("Collaboration settings"), // label
-     gettext("Manage collaboration settings"), // tip
-     NULL, // icon name
-     PvtboxClientAPI::collaborationSettings}, // action
-     insideSubMenu[0],  insideSubMenu[1],  insideSubMenu[2],  insideSubMenu[3] };
-
-const MenuItemDescription insideSubMenuNotShared[] = { // Submenu for synchronized folder not shared
-    insideSubMenu[0],  insideSubMenu[2],  insideSubMenu[3] };
-
-const MenuItemDescription insideSubMenuNotSharedWithCollabs[] = { // Submenu for synchronized folder not shared with collaborations
-    insideSubMenuWithCollabs[0], insideSubMenuWithCollabs[1],  insideSubMenuWithCollabs[3],  insideSubMenuWithCollabs[4] };
+const int insideSize = sizeof(insideSubMenu) / sizeof(insideSubMenu[0]);
+MenuItemDescription items[insideSize];
 
 const MenuItemDescription outsideSubMenu[] = { // Submenu for all other folders
     {"copy_to_sync_folder", // name for GTK
@@ -121,10 +137,9 @@ bool MenuItemDescription::hasChildren() const {
     return action == NULL;
 }
 
-
 MenuDescription getMenu(const std::vector<std::string>& selectedFilesPaths,
                         const MenuItemDescription* parent) {
-    MenuDescription result = {NULL, 0};
+        MenuDescription result = {NULL, 0};
     if (selectedFilesPaths.empty()) {
         return result;
     }
@@ -140,35 +155,44 @@ MenuDescription getMenu(const std::vector<std::string>& selectedFilesPaths,
     }
 
     if (parent == NULL) {
-        result.items = &menu;
-        result.size = 1;
+        std::unordered_set<int> hidden;     // indeces of hidden main menu items
+        std::string offlineStatus = PvtboxClientAPI::offlineStatus(selectedFilesPaths);
+        if (offlineStatus != "online") {
+            hidden.emplace(1);
+        }
+        if (offlineStatus != "offline") {
+            hidden.emplace(0);
+        }
+        for (int i = 0, j = 0; i < insideMainSize; ++i) {
+            auto it = hidden.find(i);
+            if (it != hidden.end())
+                continue;
+            mainItems[j++] = insideMenu[i];
+        }
+        result.items = mainItems;
+        result.size = insideMainSize - hidden.size();
         if (syncFolderUtf8.empty() || selectedFilePath.find(syncFolderUtf8 + SEPARATOR) == std::string::npos) {
             result.items = outsideSubMenu;
             result.size = sizeof(outsideSubMenu) / sizeof(outsideSubMenu[0]);
         }
-    } else if (parent == &menu) {
-        std::string is_shared = PvtboxClientAPI::isShared(selectedFilesPaths);
+    } else if (parent->hasChildren()) {
+        std::unordered_set<int> hidden;     // indeces of hidden submenu items
         bool showCollab = selectedFilesPaths.size() == 1 && isRootDirectory(selectedFilePath, syncFolderUtf8);
-        if (is_shared.size() != 0){
-            if (showCollab) {
-                result.items = insideSubMenuWithCollabs;
-                result.size = sizeof(insideSubMenuWithCollabs) / sizeof(insideSubMenuWithCollabs[0]);
-            }
-            else{
-                result.items = insideSubMenu;
-                result.size = sizeof(insideSubMenu) / sizeof(insideSubMenu[0]);
-            }
+        if (!showCollab) {
+            hidden.emplace(0);
         }
-        else{
-            if (showCollab) {
-                result.items = insideSubMenuNotSharedWithCollabs;
-                result.size = sizeof(insideSubMenuNotSharedWithCollabs) / sizeof(insideSubMenuNotSharedWithCollabs[0]);
-            }
-            else {
-                result.items = insideSubMenuNotShared;
-                result.size = sizeof(insideSubMenuNotShared) / sizeof(insideSubMenuNotShared[0]);
-            }
+        std::string is_shared = PvtboxClientAPI::isShared(selectedFilesPaths);
+        if (is_shared.size() == 0) {
+            hidden.emplace(2);
         }
+        for (int i = 0, j=0; i < insideSize; ++i) {
+            auto it = hidden.find(i);
+            if (it != hidden.end())
+                continue;
+            items[j++] = insideSubMenu[i];
+        }
+        result.items = items;
+        result.size = insideSize - hidden.size();
     }
 
     return result;

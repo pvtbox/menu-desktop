@@ -43,6 +43,7 @@ public:
         StateSynced,
         StateSyncing,
         StatePaused,
+        StateOnline,
         StateNone
     };
     PathChecker();
@@ -81,6 +82,7 @@ private:
     void clear_paths_(const std::string& path);
     void clear_cache_();
     bool is_path_hidden_(const std::wstring& path);
+    bool is_path_online_file_(const std::wstring& path, int state);
     void update_pending_(const wchar_t* path);
     void clear_pending_();
     void query_update_();

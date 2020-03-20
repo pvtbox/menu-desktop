@@ -229,8 +229,24 @@ HBITMAP IconsCache::getIcon(const char* iconName) {
             HICON icon = LoadIcon(instance, MAKEINTRESOURCE(IDI_PVTBOX));
             pvtboxIcon = iconToBitmapPARGB32(icon);
         }
-
         return pvtboxIcon;
+    }
+
+    else if (strcmp(iconName, "pvtbox-syncing") == 0) {
+        static HBITMAP syncingIcon = 0;
+        if (!syncingIcon) {
+            HICON icon = LoadIcon(instance, MAKEINTRESOURCE(IDI_SYNCING));
+            syncingIcon = iconToBitmapPARGB32(icon);
+        }
+        return syncingIcon;
+    }
+    else if (strcmp(iconName, "pvtbox-online") == 0) {
+        static HBITMAP onlineIcon = 0;
+        if (!onlineIcon) {
+            HICON icon = LoadIcon(instance, MAKEINTRESOURCE(IDI_ONLINE));
+            onlineIcon = iconToBitmapPARGB32(icon);
+        }
+        return onlineIcon;
     }
 
     return NULL;

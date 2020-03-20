@@ -22,6 +22,7 @@
 #define OVERLAY_GUID_SYNCED         L"{5F86DE93-D539-4F03-99EF-9D6E40312E63}"
 #define OVERLAY_GUID_SYNCING        L"{5F86DE94-D539-4F03-99EF-9D6E40312E63}"
 #define OVERLAY_GUID_PAUSED         L"{5F86DE95-D539-4F03-99EF-9D6E40312E63}"
+#define OVERLAY_GUID_ONLINE         L"{5F86DE96-D539-4F03-99EF-9D6E40312E63}"
 
 #define OVERLAY_GENERIC_NAME        L"pvtbox overlay handler"
 
@@ -29,6 +30,7 @@
 #define OVERLAY_NAME_SYNCED         L"     pvtboxSynced"
 #define OVERLAY_NAME_SYNCING        L"     pvtboxSyncing"
 #define OVERLAY_NAME_PAUSED         L"     pvtboxPaused"
+#define OVERLAY_NAME_ONLINE         L"     pvtboxOnline"
 
 #define REGISTRY_OVERLAY_KEY        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellIconOverlayIdentifiers"
 #define REGISTRY_CLSID              L"CLSID"

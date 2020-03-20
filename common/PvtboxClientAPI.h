@@ -45,4 +45,10 @@ namespace PvtboxClientAPI {
     void collaborationSettings(const std::vector<std::string>& selectedFilesPaths);
 
     std::string isShared(const std::vector<std::string>& selectedFilesPaths);
+
+    std::string offlineStatus(const std::vector<std::string>& selectedFilesPaths);
+
+    void offlineOn(const std::vector<std::string>& selectedFilesPaths);
+
+    void offlineOff(const std::vector<std::string>& selectedFilesPaths);
 }

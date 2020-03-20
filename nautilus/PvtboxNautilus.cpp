@@ -112,7 +112,8 @@ NautilusMenuItem* createMenuItem(const MenuItemDescription& menuItem,
 
     const MenuDescription& subMenuDescription = getMenu(paths,
                                                         &menuItem);
-    if (subMenuDescription.size) {
+    if (subMenuDescription.size && menuItem.hasChildren())
+    {
         NautilusMenu* subMenu = nautilus_menu_new();
         nautilus_menu_item_set_submenu(item, subMenu);
         for (int i = 0; i < subMenuDescription.size; ++i) {
@@ -346,6 +347,11 @@ void on_status_changed(std::string path, std::string status)
         overlays = "pvtbox-paused";
     else if (status == "error")
         overlays = "pvtbox-error";
+    else if (status == "online")
+    {
+        if ( nautilus_file_info_is_directory (file) )
+            overlays = "pvtbox-online";
+    }
 
 
     if (overlays != "")

@@ -44,7 +44,7 @@ extern HINSTANCE instanceHandle;
 #define IDM_DISPLAY 0  
 #define IDB_OK 101
 
-static const int icon_indeces[] = {1, 2, 0, 3};
+static const int icon_indeces[] = {1, 2, 0, 3, 4};
 
 namespace {
 
@@ -118,14 +118,16 @@ IFACEMETHODIMP Overlay::GetPriority(int *pPriority)
     switch (_state) {
     case State_Synced:
         *pPriority = 1; break;
-    case State_Syncing:
+    case State_Online:
         *pPriority = 2; break;
-    case State_Paused:
+    case State_Syncing:
         *pPriority = 3; break;
-    case State_Error:
+    case State_Paused:
         *pPriority = 4; break;
-    default:
+    case State_Error:
         *pPriority = 5; break;
+    default:
+        *pPriority = 6; break;
     }
 
     return S_OK;

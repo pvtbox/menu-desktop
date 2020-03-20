@@ -481,3 +481,32 @@ void PvtboxClientAPI::collaborationSettings(const std::vector<std::string>& sele
     sendJsonMessage("collaboration_settings",
         selectedFilesPaths);
 }
+
+//=============================================================================
+//Check files (folders) offline status 
+std::string PvtboxClientAPI::offlineStatus(const std::vector<std::string>& selectedFilesPaths) {
+#ifdef _WIN32
+    FileLogger::write("PvtboxClientAPI::offlineStatus");
+#endif
+
+    Json::Value answer = sendJsonMessage("offline_status",
+        selectedFilesPaths);
+    Json::Value defaultValue;
+    Json::Value statusValue = answer.get(jsonPathKey, defaultValue);
+    
+    return statusValue.asString();
+}
+
+//=============================================================================
+// Set offline status On
+void PvtboxClientAPI::offlineOn(const std::vector<std::string>& selectedFilesPaths) {
+    sendJsonMessage("offline_on",
+        selectedFilesPaths);
+}
+
+//=============================================================================
+// Set offline status Off
+void PvtboxClientAPI::offlineOff(const std::vector<std::string>& selectedFilesPaths) {
+    sendJsonMessage("offline_off",
+        selectedFilesPaths);
+}

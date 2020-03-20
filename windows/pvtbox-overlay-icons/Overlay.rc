@@ -56,6 +56,7 @@ IDI_STATE_ERROR         ICON                    "ico\\Error.ico"
 IDI_STATE_SYNCED        ICON                    "ico\\Synced.ico"
 IDI_STATE_SYNCIND       ICON                    "ico\\Syncing.ico"
 IDI_STATE_PAUSED        ICON                    "ico\\Paused.ico"
+IDI_STATE_ONLINE        ICON                    "ico\\Online.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

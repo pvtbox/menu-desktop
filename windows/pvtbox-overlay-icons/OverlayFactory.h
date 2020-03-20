@@ -27,7 +27,8 @@ enum State {
     State_Error = 0,
     State_Synced,
     State_Syncing,
-    State_Paused
+    State_Paused,
+    State_Online
 };
 
 class OverlayFactory : public IClassFactory

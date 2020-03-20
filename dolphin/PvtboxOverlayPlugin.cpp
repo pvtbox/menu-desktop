@@ -19,6 +19,7 @@
 **/
 #include <QUrl>
 #include <QDebug>
+#include <QFileInfo>
 
 #include <iostream>
 #include <cstring>
@@ -74,6 +75,11 @@ QStringList PvtboxOverlayPlugin::getOverlays (const QUrl &url)
         overlays << "pvtbox-paused";
     else if (status == "error")
         overlays << "pvtbox-error";
+    else if (status == "online")
+    {
+        if ( QFileInfo(QString(path.c_str())).isDir() )
+            overlays << "pvtbox-online";
+    }
 
     return overlays;
 }

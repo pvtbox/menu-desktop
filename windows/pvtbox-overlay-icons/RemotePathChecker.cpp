@@ -156,6 +156,8 @@ bool PathChecker::IsPathMonitored(const wchar_t* filePath, int* state)
     auto it = _cache.find(path);
     if (it != _cache.end()) {
         // The path is in our cache, and we'll get updates pushed if the status changes.
+        if (is_path_online_file_(path, it->second))
+            return false;
         *state = it->second;
         // log_f << "checker log " << "IsPathMonitored " << ws2utf8(filePath) << " state " << *state << std::endl;
         return true;
@@ -223,6 +225,9 @@ PathChecker::FileState PathChecker::_StrToFileState(const std::string& str)
     else if (str == "error") {
         return StateError;
     }
+    else if (str == "online") {
+        return StateOnline;
+    }
 
     return StateNone;
 }
@@ -273,6 +278,13 @@ bool PathChecker::is_path_hidden_(const std::wstring& path) {
         return true;
 
     return false;
+}
+
+bool PathChecker::is_path_online_file_(const std::wstring& path, int state) {
+    // log_f << "checker log " << "path " << ws2utf8(path) << " is_path_online_file_ " << state << std::endl;
+    std::wstring suffix = L".pvtbox";
+    int pos = path.rfind(suffix);
+    return (state == StateOnline && pos != std::wstring::npos && pos + suffix.size() >= path.size());
 }
 
 void PathChecker::set_status_(std::vector<std::string>& paths, const std::string& status) {
